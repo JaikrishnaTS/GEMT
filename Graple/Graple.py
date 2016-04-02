@@ -229,7 +229,8 @@ class Graple:
         ## results that are returned to the client.
         rexe = CONFIG['Rexe']
         topdir = os.getcwd()
-        glm = join(join(topdir, 'GLM'), 'glm',)
+        # glm = join(join(topdir, 'GLM'), 'glm',)
+	glm = "/usr/local/bin/glm"
         rscript = join(join(topdir, 'Scripts'), CONFIG['Rmain'])
               
         for JobName in listdir('.'):
@@ -242,8 +243,8 @@ class Graple:
             if isdir(simdir):
                 os.chdir(simdir)
                 os.mkdir('Results')
-                subprocess.call("export LD_LIBRARY_PATH=.",shell=True)
-                res = subprocess.call([glm])
+                # subprocess.call("export LD_LIBRARY_PATH=.",shell=True)
+                res = subprocess.call(glm)
                 for file in os.listdir("."):
                     if (os.path.isdir(file)==False):
                         shutil.copy(os.path.join(os.getcwd(),file),os.path.join(os.getcwd(),'Results'))
