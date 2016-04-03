@@ -26,7 +26,8 @@ executable=Condor/run.sh
 output=Scratch/sim{JobNumber}.out
 error=Scratch/sim{JobNumber}.err
 log=Scratch/sim{JobNumber}.log
-requirements=(Memory >= 512) && (TARGET.Arch == "X86_64") && (TARGET.OpSys == "LINUX")
+request_memory=512M
+requirements=(TARGET.Arch == "X86_64") && (TARGET.OpSys == "LINUX")
 transfer_input_files=Scratch/job{JobNumber}.bz2.tar, Graple/Graple.py
 transfer_output_files=Results.bz2.tar
 transfer_output_remaps="Results.bz2.tar=Results/Results{JobNumber}.bz2.tar"
@@ -45,7 +46,6 @@ class Graple:
             #self.top_dir, base_dir = os.path.split(os.getcwd())
             self.top_dir = os.getcwd()
         self.ScriptsDir = 'Scripts'
-        self.GlmDir = 'GLM'
         self.SimsDir = 'Sims'
         self.CondorDir = 'Condor'
         self.TempDir = 'Scratch'
@@ -103,9 +103,6 @@ class Graple:
         if not isdir(self.ScriptsDir):
             os.mkdir(self.ScriptsDir)
         
-        if not isdir(self.GlmDir):
-            os.mkdir(self.GlmDir)
-        
         if not isdir(self.TempDir):
             os.mkdir(self.TempDir)
 
@@ -133,7 +130,6 @@ class Graple:
         os.chdir(self.top_dir)
         with tarfile.open(JobName, 'w:bz2', compresslevel=9) as tar:
             tar.add(self.ScriptsDir)
-            tar.add(self.GlmDir)
             for adir in SimDirList:
                 tar.add(adir)
         print JobName + ' created'
@@ -229,8 +225,7 @@ class Graple:
         ## results that are returned to the client.
         rexe = CONFIG['Rexe']
         topdir = os.getcwd()
-        # glm = join(join(topdir, 'GLM'), 'glm',)
-	glm = "/usr/local/bin/glm"
+        glm = "/usr/local/bin/glm"
         rscript = join(join(topdir, 'Scripts'), CONFIG['Rmain'])
               
         for JobName in listdir('.'):
@@ -243,7 +238,6 @@ class Graple:
             if isdir(simdir):
                 os.chdir(simdir)
                 os.mkdir('Results')
-                # subprocess.call("export LD_LIBRARY_PATH=.",shell=True)
                 res = subprocess.call(glm)
                 for file in os.listdir("."):
                     if (os.path.isdir(file)==False):
